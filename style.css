@@ -1,3 +1,7 @@
 #game {
   image-rendering: pixelated;
 }
+
+body {
+  background: lightgrey;
+}
