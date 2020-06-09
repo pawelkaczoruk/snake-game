@@ -6,6 +6,11 @@ class Vec {
     this.x = x;
     this.y = y;
   }
+
+  update(x, y) {
+    this.x = x;
+    this.y = y;
+  }
 }
 
 class Rect {
@@ -33,70 +38,88 @@ class Rect {
   }
 
   get b() {
-    return this.y;
-  }
-
-  set b(value) {
-    this.y = value;
-  }
-
-  get t() {
     return this.y + this.h;
   }
 
-  set t(value) {
+  set b(value) {
     this.y = value - this.h;
+  }
+
+  get t() {
+    return this.y;
+  }
+
+  set t(value) {
+    this.y = value;
   }
 }
 
-document.addEventListener('keydown', (e) => {
-  if (e.code == 'KeyW') keyControl.W = true;
-  if (e.code == 'KeyS') keyControl.S = true;
-  if (e.code == 'KeyA') keyControl.A = true;
-  if (e.code == 'KeyD') keyControl.D = true;
-});
+class Level extends Rect {
+  constructor(x, y, w, h) {
+    super(x, y, w, h);
+  }
 
-document.addEventListener('keyup', (e) => {
-  if (e.code == 'KeyW') keyControl.W = false;
-  if (e.code == 'KeyS') keyControl.S = false;
-  if (e.code == 'KeyA') keyControl.A = false;
-  if (e.code == 'KeyD') keyControl.D = false;
-});
+  draw(ctx) {
+    context.fillStyle = 'white';
+    ctx.fillRect(this.x, this.y, this.w, this.h);
+  }
+}
 
-let keyControl = {
-  W: false,
-  S: false,
-  A: false,
-  D: false,
-};
-let player = new Rect(0, 0, 32, 32);
-const obstacle = new Rect(256, 256, 32, 32);
+class Player extends Rect {
+  constructor(x, y, w, h) {
+    super(x, y, w, h);
 
-gameLoop();
+    this.speed = new Vec(0, 0);
+    this.deltaTime = 0.5;
 
-function gameLoop() {
-  if (keyControl.W && !keyControl.S) player.y -= 4;
-  if (keyControl.S && !keyControl.W) player.y += 4;
-  if (keyControl.A && !keyControl.D) player.x -= 4;
-  if (keyControl.D && !keyControl.A) player.x += 4;
+    this.addControls();
+  }
 
-  if (player.x < 0) player.x = 0;
-  if (player.x > canvas.width - player.w) player.x = canvas.width - player.w;
-  if (player.y < 0) player.y = 0;
-  if (player.y > canvas.height - player.h) player.y = canvas.height - player.h;
+  addControls() {
+    document.addEventListener('keydown', (e) => {
+      if (e.code == 'KeyW') this.speed.update(0, -32);
+      if (e.code == 'KeyS') this.speed.update(0, 32);
+      if (e.code == 'KeyA') this.speed.update(-32, 0);
+      if (e.code == 'KeyD') this.speed.update(32, 0);
+    });
+  }
 
-  if (overlaps(player, obstacle)) console.log('overlaps');
+  draw(ctx) {
+    ctx.fillStyle = 'black';
+    ctx.fillRect(player.x, player.y, player.w, player.h);
+  }
 
-  context.fillStyle = 'white';
-  context.fillRect(0, 0, canvas.width, canvas.height);
+  update() {
+    this.x += this.speed.x;
+    this.y += this.speed.y;
 
-  context.fillStyle = 'black';
-  context.fillRect(player.x, player.y, player.w, player.h);
+    if (this.x < 0) this.x = 0;
+    if (this.x > canvas.width - this.w) this.x = canvas.width - this.w;
+    if (this.y < 0) this.y = 0;
+    if (this.y > canvas.height - this.h) this.y = canvas.height - this.h;
+  }
+}
 
-  context.fillStyle = 'yellow';
-  context.fillRect(obstacle.x, obstacle.y, obstacle.w, obstacle.h);
+let player = new Player(0, 0, 32, 32);
+let level = new Level(0, 0, canvas.width, canvas.height)
 
-  window.requestAnimationFrame(gameLoop);
+let accumulatedTime = 0;
+let lastTime = 0;
+
+function gameLoop(time) {
+  accumulatedTime += (time - lastTime) / 1000;
+
+  while (accumulatedTime > player.deltaTime) {
+    player.update();
+    level.draw(context);
+    player.draw(context);
+
+    accumulatedTime -= player.deltaTime;
+  }
+
+  requestAnimationFrame(gameLoop);
+
+  lastTime = time;
 }
 
 function overlaps(player, obstacle) {
@@ -106,4 +129,6 @@ function overlaps(player, obstacle) {
          && player.y < obstacle.y + 32;
 }
 
+
+gameLoop(0);
 
