@@ -24,7 +24,7 @@ export default class Level extends Rect {
   }
 
   update(player) {
-    if (!this.dots.length || Math.random() > 0.95) {
+    if (this.dots.length < 3 && (!this.dots.length || Math.random() > 0.95)) {
       let dot;
 
       while (!dot) {

@@ -11,20 +11,12 @@ export default class Player {
 
     this.score = 0;
     this.pos = [];
-    this.speed = new Vec2(0, 0);
+    this.speed = new Vec2(1, 0);
     this.canControl = true;
-    this.deltaTime = 0;
+    this.deltaTime = 0.4;
 
     this.reset();
     addControls(this);
-  }
-
-  draw(ctx) {
-    ctx.fillStyle = 'black';
-    
-    this.pos.forEach(pos => {
-      ctx.fillRect(pos.x * SIZE, pos.y * SIZE, pos.w * SIZE, pos.h * SIZE);
-    });
   }
 
   collide(level) {
@@ -51,10 +43,19 @@ export default class Player {
         this.score++;
         level.dots.splice(i, 1);
 
-        if (this.score === 5) this.deltaTime = 0.3;
+        if (this.score === 3) this.deltaTime = 0.3;
         if (this.score === 10) this.deltaTime = 0.2;
         if (this.score === 20) this.deltaTime = 0.1;
+
+        this.pos.push(new Rect(-100, -100));
       }
+    });
+  }  
+
+  draw(ctx) {
+    this.pos.forEach((pos, i) => {
+      ctx.fillStyle = 'green'
+      ctx.fillRect(pos.x * SIZE, pos.y * SIZE, pos.w * SIZE, pos.h * SIZE);
     });
   }
 
@@ -77,7 +78,6 @@ export default class Player {
 
     this.pos.unshift(new Rect(x, y));
     this.pos.pop();
-
     this.collide(level);
 
     this.scoreBoard.innerText = this.score;
