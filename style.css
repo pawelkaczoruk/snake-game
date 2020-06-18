@@ -1,7 +1,29 @@
-#game {
-  image-rendering: pixelated;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 body {
   background: lightgrey;
+  display: flex;
+  font-size: 16px;
+}
+
+#game {
+  image-rendering: pixelated;
+}
+
+.score-board {
+  margin-left: 1rem;
+}
+
+h1 {
+  font-size: 4rem;
+}
+
+p {
+  font-size: 2rem;
 }

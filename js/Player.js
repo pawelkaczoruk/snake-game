@@ -1,23 +1,21 @@
-import { Vec2, Rect } from './math.js'
+import { Vec2, Rect, overlaps } from './math.js'
 
 const SIZE = 32;
 
 export default class Player {
-  constructor(x = 10, y = 8) {
+  constructor(scoreBoard, timeBoard) {
+    this.scoreBoard = scoreBoard;
+    this.timeBoard = timeBoard;
+
+    this.timer = setTimer(this.timeBoard);
+
     this.score = 0;
-    this.pos = [
-      new Rect(x, y),
-      new Rect(x - 1, y),
-      new Rect(x - 2, y),
-      new Rect(x - 3, y),
-      new Rect(x - 4, y),
-      new Rect(x - 5, y),
-    ];
-
-    this.speed = new Vec2(1, 0);
+    this.pos = [];
+    this.speed = new Vec2(0, 0);
     this.canControl = true;
-    this.deltaTime = 0.5;
+    this.deltaTime = 0;
 
+    this.reset();
     addControls(this);
   }
 
@@ -36,12 +34,28 @@ export default class Player {
     if (head.r - 1 < level.l || head.l + 1 > level.r
         || head.b - 1 < level.t || head.t + 1 > level.b) {
       this.reset();
+      level.reset();
     }
 
     // collistion with snake itself
     for (let i = 1; i < this.pos.length; i++) {
-      if (overlaps(head, this.pos[i])) this.reset();
+      if (overlaps(head, this.pos[i])) {
+        this.reset();
+        level.reset();
+      }
     }
+
+    // collision with dots
+    level.dots.forEach((dot, i) => {
+      if (overlaps(head, dot)) {
+        this.score++;
+        level.dots.splice(i, 1);
+
+        if (this.score === 5) this.deltaTime = 0.3;
+        if (this.score === 10) this.deltaTime = 0.2;
+        if (this.score === 20) this.deltaTime = 0.1;
+      }
+    });
   }
 
   reset(x = 10, y = 8) {
@@ -51,6 +65,9 @@ export default class Player {
       new Rect(x - 2, y),
     ]
     this.speed.update(1, 0);
+    this.score = 0;
+    this.deltaTime = 0.4;
+    this.timeBoard.innerText = 0;
   }
 
   update(level) {
@@ -62,6 +79,8 @@ export default class Player {
     this.pos.pop();
 
     this.collide(level);
+
+    this.scoreBoard.innerText = this.score;
 
     this.canControl = true;
   }
@@ -85,9 +104,8 @@ function addControls(player) {
   });
 }
 
-function overlaps(player, obstacle) {
-  return player.x + 1 > obstacle.x
-         && player.x < obstacle.x + 1
-         && player.y + 1 > obstacle.y
-         && player.y < obstacle.y + 1;
+function setTimer(timer) {
+  return setInterval(() => {
+    timer.innerText = Number(timer.innerText) + 1;
+  }, 1000);
 }

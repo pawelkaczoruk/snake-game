@@ -50,3 +50,10 @@ export class Rect {
     this.y = value;
   }
 }
+
+export function overlaps(player, obstacle) {
+  return player.x + 1 > obstacle.x
+         && player.x < obstacle.x + 1
+         && player.y + 1 > obstacle.y
+         && player.y < obstacle.y + 1;
+}
