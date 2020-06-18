@@ -4,8 +4,10 @@ import Level from './Level.js'
 const canvas = document.getElementById('game');
 const context = canvas.getContext('2d');
 
-let player = new Player(0, 0, 32, 32);
-let level = new Level(0, 0, canvas.width, canvas.height)
+const SIZE = 32;
+
+let player = new Player();
+let level = new Level(0, 0, canvas.width / SIZE, canvas.height / SIZE);
 
 let accumulatedTime = 0;
 let lastTime = 0;
@@ -25,13 +27,5 @@ function gameLoop(time) {
 
   lastTime = time;
 }
-
-function overlaps(player, obstacle) {
-  return player.x + 32 > obstacle.x
-         && player.x < obstacle.x + 32
-         && player.y + 32 > obstacle.y
-         && player.y < obstacle.y + 32;
-}
-
 
 gameLoop(0);
