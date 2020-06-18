@@ -9,13 +9,28 @@ export default class Level extends Rect {
     this.dots = [];
   }
 
-  draw(ctx) {
+  draw(ctx, spriteSheet) {
+    
+    // draw background
     ctx.fillStyle = 'white';
     ctx.fillRect(this.x * SIZE, this.y * SIZE, this.w * SIZE, this.h * SIZE);
 
-    ctx.fillStyle = 'red';
+    ctx.fillStyle = 'rgba(113, 156, 133, 0.1)';
+    for (let i = 0; i < 30; i += 2) {
+      ctx.fillRect(i * SIZE, this.y * SIZE, SIZE, this.h * SIZE);
+    }
+    ctx.fillStyle = 'rgba(113, 156, 133, 0.1)';
+    for (let i = 0; i < 17; i += 2) {
+      ctx.fillRect(this.x * SIZE, i * SIZE, this.w * SIZE, SIZE);
+    }
+
+    // draw dots
     this.dots.forEach(dot => {
-      ctx.fillRect(dot.x * SIZE, dot.y * SIZE, dot.w * SIZE, dot.h * SIZE);
+      ctx.drawImage(spriteSheet, 
+        0 * SIZE, 1 * SIZE,
+        1 * SIZE, 1 * SIZE,
+        dot.x * SIZE, dot.y * SIZE, 
+        dot.w * SIZE, dot.h * SIZE);
     });
   }
 

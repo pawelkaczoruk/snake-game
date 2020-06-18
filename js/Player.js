@@ -52,11 +52,33 @@ export default class Player {
     });
   }  
 
-  draw(ctx) {
-    this.pos.forEach((pos, i) => {
-      ctx.fillStyle = 'green'
-      ctx.fillRect(pos.x * SIZE, pos.y * SIZE, pos.w * SIZE, pos.h * SIZE);
-    });
+  draw(ctx, spriteSheet) {
+    // snake body
+    for (let i = 1; i < this.pos.length; i++) {
+      ctx.drawImage(spriteSheet,
+        0 * SIZE, 0 * SIZE,
+        1 * SIZE, 1 * SIZE,
+        this.pos[i].x * SIZE, this.pos[i].y * SIZE,
+        this.pos[i].w * SIZE, this.pos[i].h * SIZE);      
+    }
+    
+    // snake head
+    const head = this.pos[0];
+    let deg = 0;
+
+    if (this.speed.y === 0) deg = this.speed.x > 0 ? 0 : 180;
+    else deg = this.speed.y > 0 ? 90 : 270;
+
+    ctx.save();
+    ctx.translate(head.x * SIZE + head.w * SIZE / 2, head.y * SIZE + head.h * SIZE / 2);
+    ctx.rotate(deg * Math.PI/180);
+    ctx.translate(-head.w * SIZE / 2, -head.h * SIZE / 2);
+    ctx.drawImage(spriteSheet,
+      1 * SIZE, 0 * SIZE,
+      head.w * SIZE, head.h * SIZE,
+      0, 0,
+      head.w * SIZE, head.h * SIZE);  
+    ctx.restore();
   }
 
   reset(x = 10, y = 8) {
