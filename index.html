@@ -4,15 +4,29 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>tiledTrials</title>
+  <link href="https://fonts.googleapis.com/css2?family=Piedra&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="score-board">
-    <p>Score: <span id="score">0</span></p>
-    <p>Time: <span id="time">0</span></p>
+
+  <div class="game-container">
+    <div class="score-board">
+      <p>Score: <span id="score">0</span></p>
+      <p>Best: <span id="best">0</span></p>
+    </div>
+    
+    <canvas id="game" class="paused" height="416" width="736">Your browser doesn't support canvas</canvas>
+
+    <div id="modal" class="modal">
+      <h1>Snake</h1>
+      <button id="start">Play</button>
+    </div>
+
+    <div class="info">
+      <p>- Use WSAD or arrows to move</p>
+      <p>- Click on Game to pause</p>
+    </div>    
   </div>
-  
-  <canvas id="game" height="544" width="960"></canvas>
 
   <script src="js/game.js" type="module"></script>
 </body>

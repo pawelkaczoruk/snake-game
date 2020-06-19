@@ -1,13 +1,37 @@
 import { Vec2, Rect, overlaps } from './math.js'
+import modalController from './modalController.js';
 
 const SIZE = 32;
+const TEXTURES = {
+  head: {
+    top: new Vec2(2, 1),
+    right: new Vec2(1, 1),
+    bottom: new Vec2(1, 0),
+    left: new Vec2(2, 0),
+  },
+  body: {
+    horizontal: new Vec2(0, 1),
+    vertical: new Vec2(0, 2),
+  },
+  corner: {
+    tl: new Vec2(1,2),
+    tr: new Vec2(2,2),
+    br: new Vec2(4,2),
+    bl: new Vec2(3,2),
+  },
+  tail: {
+    top: new Vec2(4, 1),
+    right: new Vec2(3, 1),
+    bottom: new Vec2(3, 0),
+    left: new Vec2(4, 0),
+  },
+};
 
 export default class Player {
-  constructor(scoreBoard, timeBoard) {
+  constructor(scoreBoard, bestScore) {
     this.scoreBoard = scoreBoard;
-    this.timeBoard = timeBoard;
-
-    this.timer = setTimer(this.timeBoard);
+    this.bestScore = bestScore;
+    this.game = undefined;
 
     this.score = 0;
     this.pos = [];
@@ -15,8 +39,9 @@ export default class Player {
     this.canControl = true;
     this.deltaTime = 0.4;
 
+    this.controller = null;
+
     this.reset();
-    addControls(this);
   }
 
   collide(level) {
@@ -25,15 +50,19 @@ export default class Player {
     // collistion with walls
     if (head.r - 1 < level.l || head.l + 1 > level.r
         || head.b - 1 < level.t || head.t + 1 > level.b) {
-      this.reset();
+      this.reset(15, 8);
       level.reset();
+
+      modalController('restart', this.game);
     }
 
     // collistion with snake itself
     for (let i = 1; i < this.pos.length; i++) {
       if (overlaps(head, this.pos[i])) {
-        this.reset();
+        this.reset(15, 8);
         level.reset();
+
+        modalController('restart', this.game);
       }
     }
 
@@ -44,13 +73,13 @@ export default class Player {
         level.dots.splice(i, 1);
 
         if (this.score === 3) this.deltaTime = 0.3;
-        if (this.score === 10) this.deltaTime = 0.2;
-        if (this.score === 20) this.deltaTime = 0.1;
+        if (this.score === 10) this.deltaTime = 0.22;
+        if (this.score === 20) this.deltaTime = 0.15;
 
         this.pos.push(new Rect(-100, -100));
       }
     });
-  }  
+  }
 
   draw(ctx, spriteSheet) {
     // snake body
@@ -81,16 +110,20 @@ export default class Player {
     ctx.restore();
   }
 
-  reset(x = 10, y = 8) {
+  reset(x = 14, y = 8) {
     this.pos = [
       new Rect(x, y),
       new Rect(x - 1, y),
       new Rect(x - 2, y),
     ]
     this.speed.update(1, 0);
+    if (this.score > Number(this.bestScore.innerText)) this.bestScore.innerText = this.score;
     this.score = 0;
     this.deltaTime = 0.4;
-    this.timeBoard.innerText = 0;
+  }
+
+  setGame(game) {
+    this.game = game;
   }
 
   update(level) {
@@ -106,28 +139,4 @@ export default class Player {
 
     this.canControl = true;
   }
-}
-
-
-function addControls(player) {
-  document.addEventListener('keydown', (e) => {
-    if (player.canControl) {
-      player.canControl = false;
-
-      if (player.speed.y == 0) {
-        if (e.code == 'KeyW') player.speed.update(0, -1);
-        if (e.code == 'KeyS') player.speed.update(0, 1);
-      }
-      if (player.speed.x == 0) {
-        if (e.code == 'KeyA') player.speed.update(-1, 0);
-        if (e.code == 'KeyD') player.speed.update(1, 0);      
-      }      
-    }
-  });
-}
-
-function setTimer(timer) {
-  return setInterval(() => {
-    timer.innerText = Number(timer.innerText) + 1;
-  }, 1000);
 }

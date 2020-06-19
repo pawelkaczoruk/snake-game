@@ -1,6 +1,9 @@
-import { Rect, overlaps } from './math.js'
+import { Rect, overlaps, Vec2 } from './math.js'
 
 const SIZE = 32;
+const TEXTURES = {
+  apple: new Vec2(0, 0),
+};
 
 export default class Level extends Rect {
   constructor(x, y, w, h) {
@@ -27,8 +30,8 @@ export default class Level extends Rect {
     // draw dots
     this.dots.forEach(dot => {
       ctx.drawImage(spriteSheet, 
-        0 * SIZE, 1 * SIZE,
-        1 * SIZE, 1 * SIZE,
+        TEXTURES.apple.x * SIZE, TEXTURES.apple.y * SIZE,
+        dot.w * SIZE, dot.h * SIZE,
         dot.x * SIZE, dot.y * SIZE, 
         dot.w * SIZE, dot.h * SIZE);
     });
