@@ -47,7 +47,10 @@ export default class Level extends Rect {
 
       while (!dot) {
         dot = new Rect(Math.floor(Math.random() * this.w), Math.floor(Math.random() * this.h));
-        if (overlaps(player, dot)) dot = undefined;
+        
+        player.pos.forEach(pos => {
+          if (overlaps(pos, dot)) dot = undefined;
+        });
 
         this.dots.forEach(el => {
           if (overlaps(el, dot)) dot = undefined;

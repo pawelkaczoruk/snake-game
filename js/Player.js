@@ -50,16 +50,16 @@ export default class Player {
     // collistion with walls
     if (head.r - 1 < level.l || head.l + 1 > level.r
         || head.b - 1 < level.t || head.t + 1 > level.b) {
-      this.reset(12, 6);
+      this.reset(4, 12, 6);
       level.reset();
 
       modalController('restart', this.game);
     }
 
     // collistion with snake itself
-    for (let i = 1; i < this.pos.length; i++) {
+    for (let i = 1; i < this.pos.length - 1; i++) {
       if (overlaps(head, this.pos[i])) {
-        this.reset(12, 6);
+        this.reset(4, 12, 6);
         level.reset();
 
         modalController('restart', this.game);
@@ -115,12 +115,13 @@ export default class Player {
       head.w * SIZE, head.h * SIZE);
   }
 
-  reset(x = 11, y = 6) {
-    this.pos = [
-      new Rect(x, y),
-      new Rect(x - 1, y),
-      new Rect(x - 2, y),
-    ]
+  reset(lenght = 3, x = 11, y = 6) {
+    this.pos = [];
+    
+    for (let i = 0; i < lenght; i++) {
+      this.pos.push(new Rect(x - i, y));
+    }
+
     this.speed.update(1, 0);
     if (this.score > Number(this.bestScore.innerText)) this.bestScore.innerText = this.score;
     this.score = 0;
@@ -137,8 +138,9 @@ export default class Player {
     const y = head.y + this.speed.y;
 
     this.pos.unshift(new Rect(x, y));
-    this.pos.pop();
     this.collide(level);
+    this.pos.pop();
+    
 
     this.scoreBoard.innerText = this.score;
 

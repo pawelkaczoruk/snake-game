@@ -40,6 +40,7 @@ function gameLoop(time) {
       level.draw(context, spriteSheet);
       player.update(level);
       player.draw(context, spriteSheet);
+      
       game.firstFrame = false;
     }
 
