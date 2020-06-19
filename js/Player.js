@@ -50,7 +50,7 @@ export default class Player {
     // collistion with walls
     if (head.r - 1 < level.l || head.l + 1 > level.r
         || head.b - 1 < level.t || head.t + 1 > level.b) {
-      this.reset(15, 8);
+      this.reset(12, 6);
       level.reset();
 
       modalController('restart', this.game);
@@ -59,7 +59,7 @@ export default class Player {
     // collistion with snake itself
     for (let i = 1; i < this.pos.length; i++) {
       if (overlaps(head, this.pos[i])) {
-        this.reset(15, 8);
+        this.reset(12, 6);
         level.reset();
 
         modalController('restart', this.game);
@@ -83,34 +83,39 @@ export default class Player {
 
   draw(ctx, spriteSheet) {
     // snake body
-    for (let i = 1; i < this.pos.length; i++) {
+    for (let i = 1; i < this.pos.length - 1; i++) {
+      const body = this.pos[i];
+      const bodyTexture = determineSprite(this.pos, i);
+
       ctx.drawImage(spriteSheet,
-        0 * SIZE, 0 * SIZE,
-        1 * SIZE, 1 * SIZE,
-        this.pos[i].x * SIZE, this.pos[i].y * SIZE,
-        this.pos[i].w * SIZE, this.pos[i].h * SIZE);      
+        bodyTexture.x * SIZE, bodyTexture.y * SIZE,
+        body.w * SIZE, body.h * SIZE,
+        body.x * SIZE, body.y * SIZE,
+        body.w * SIZE, body.h * SIZE);      
     }
+
+    // snake tail
+    const tail = this.pos[this.pos.length - 1];
+    const tailTexture = determineSprite(this.pos, this.pos.length - 1);
+
+    ctx.drawImage(spriteSheet,
+      tailTexture.x * SIZE, tailTexture.y * SIZE,
+      tail.w * SIZE, tail.h * SIZE,
+      tail.x * SIZE, tail.y * SIZE,
+      tail.w * SIZE, tail.h * SIZE);
     
     // snake head
     const head = this.pos[0];
-    let deg = 0;
+    const headTexture = determineSprite(this.pos, 0, this.speed)
 
-    if (this.speed.y === 0) deg = this.speed.x > 0 ? 0 : 180;
-    else deg = this.speed.y > 0 ? 90 : 270;
-
-    ctx.save();
-    ctx.translate(head.x * SIZE + head.w * SIZE / 2, head.y * SIZE + head.h * SIZE / 2);
-    ctx.rotate(deg * Math.PI/180);
-    ctx.translate(-head.w * SIZE / 2, -head.h * SIZE / 2);
     ctx.drawImage(spriteSheet,
-      1 * SIZE, 0 * SIZE,
+      headTexture.x * SIZE, headTexture.y * SIZE,
       head.w * SIZE, head.h * SIZE,
-      0, 0,
-      head.w * SIZE, head.h * SIZE);  
-    ctx.restore();
+      head.x * SIZE, head.y * SIZE,
+      head.w * SIZE, head.h * SIZE);
   }
 
-  reset(x = 14, y = 8) {
+  reset(x = 11, y = 6) {
     this.pos = [
       new Rect(x, y),
       new Rect(x - 1, y),
@@ -139,4 +144,58 @@ export default class Player {
 
     this.canControl = true;
   }
+}
+
+function determineSprite(positions, index, speed = null) {
+
+  // head
+  if (index === 0) {
+    if (speed.x > 0) return TEXTURES.head.right;
+    if (speed.x < 0) return TEXTURES.head.left;
+    if (speed.y < 0) return TEXTURES.head.top;
+    if (speed.y > 0) return TEXTURES.head.bottom;
+  }
+
+  const TARGET = positions[index];
+  const PREV = positions[index - 1];
+
+  // tail
+  if (!positions[index + 1]) {
+    if (TARGET.x < PREV.x) return TEXTURES.tail.left;
+    if (TARGET.x > PREV.x) return TEXTURES.tail.right;
+    if (TARGET.y < PREV.y) return TEXTURES.tail.top;
+    if (TARGET.y > PREV.y) return TEXTURES.tail.bottom;
+  }
+
+  const NEXT = positions[index + 1];
+
+  // body
+  if (TARGET.x === PREV.x &&
+      TARGET.x === NEXT.x) return TEXTURES.body.vertical;
+  if (TARGET.y === PREV.y &&
+      TARGET.y === NEXT.y) return TEXTURES.body.horizontal;
+
+  // corners
+  if (TARGET.y === PREV.y) {
+    if (PREV.x > NEXT.x) {
+      if (PREV.y > NEXT.y) return TEXTURES.corner.bl;
+      if (PREV.y < NEXT.y) return TEXTURES.corner.tl;
+    }
+    if (PREV.x < NEXT.x) {
+      if (PREV.y > NEXT.y) return TEXTURES.corner.br;
+      if (PREV.y < NEXT.y) return TEXTURES.corner.tr;
+    }
+  }
+
+  if (TARGET.x === PREV.x) {
+    if (PREV.y > NEXT.y) {
+      if (PREV.x > NEXT.x) return TEXTURES.corner.tr;
+      if (PREV.x < NEXT.x) return TEXTURES.corner.tl;
+    }
+    if (PREV.y < NEXT.y) {
+      if (PREV.x > NEXT.x) return TEXTURES.corner.br;
+      if (PREV.x < NEXT.x) return TEXTURES.corner.bl;
+    }
+  }
+
 }
