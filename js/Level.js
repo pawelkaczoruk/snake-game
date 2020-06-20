@@ -48,13 +48,27 @@ export default class Level extends Rect {
       while (!dot) {
         dot = new Rect(Math.floor(Math.random() * this.w), Math.floor(Math.random() * this.h));
         
-        player.pos.forEach(pos => {
-          if (overlaps(pos, dot)) dot = undefined;
-        });
+        // check if generated dot position is not uder player
+        for (let i = 0; i < player.pos.length; i++) {
+          const pos = player.pos[i];
 
-        this.dots.forEach(el => {
-          if (overlaps(el, dot)) dot = undefined;
-        });
+          if (overlaps(pos, dot)) {
+            dot = undefined;
+            break;
+          }
+        }
+
+        if (!dot) continue; // id dot is undefined go to the next loop
+
+        // check if generated dot position is not under other dots
+        for (let i = 0; i < this.dots.length; i++) {
+          const el = this.dots[i];
+
+          if (overlaps(el, dot)) {
+            dot = undefined;
+            break;
+          }     
+        }
       }
       
       this.dots.push(dot);
