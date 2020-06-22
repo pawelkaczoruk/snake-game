@@ -34,6 +34,7 @@ export function modalController(type, game) {
     game.modal.classList.add('hidden');
     game.canvas.classList.remove('paused');
     game.controller.unpause();
+    game.bgMusic.play();
     return;
   }
 
@@ -43,10 +44,12 @@ export function modalController(type, game) {
   game.modal.classList.remove('hidden');
   game.canvas.classList.add('paused');
   game.controller.pause();
+  game.bgMusic.pause();
 
   if (type === 'pause') {
     game.startBtn.innerText = 'Resume';
   } else if (type === 'restart') {
+    game.deathSound.play();
     game.startBtn.innerText = 'Play again';
   }
 }

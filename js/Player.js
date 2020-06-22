@@ -69,6 +69,8 @@ export default class Player {
     // collision with dots
     level.dots.forEach((dot, i) => {
       if (overlaps(head, dot)) {
+        this.game.clickSound.pause();
+        this.game.clickSound.play();
         this.score++;
         level.dots.splice(i, 1);
 
@@ -126,6 +128,7 @@ export default class Player {
 
     // reset score, speed, deltaTime, apply best score if previous score was bigger
     this.speed.update(1, 0);
+    this.queuedSpeed.update(1, 0);
     if (this.score > Number(this.bestScore.innerText)) this.bestScore.innerText = this.score;
     this.score = 0;
     this.deltaTime = 0.4;

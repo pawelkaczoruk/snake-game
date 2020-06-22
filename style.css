@@ -85,6 +85,7 @@ body {
   color: white;
   font-weight: bold;
   font-size: 2.5rem;
+  outline: none;
 }
 
 .modal button:hover {
@@ -103,4 +104,26 @@ body {
   transform: translateY(calc(var(--ch) / 2 + 1rem));
   z-index: 5;
   color: rgb(34, 34, 34);
+}
+
+
+#sound-btn {
+  position: absolute;
+  transform: translateY(calc(var(--ch) / -2 - 2rem));
+  z-index: 8;
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 50%;
+  background: no-repeat center url('./assets/sound.png');
+  outline: none;
+}
+
+#sound-btn.muted {
+  background: no-repeat center url('./assets/muted.png');
+}
+
+#sound-btn:hover {
+  cursor: pointer;
+  background-color: rgba(255, 255, 255, 0.2);
 }
