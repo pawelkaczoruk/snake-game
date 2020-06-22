@@ -1,5 +1,3 @@
-import Player from './Player.js';
-
 export default class Controller {
   constructor(player) {
     this.player = player;
@@ -11,17 +9,12 @@ export default class Controller {
 
   createController() {
     document.addEventListener('keydown', e => {
-      if (this.player.canControl && !this.isPaused) {
-        this.player.canControl = false;
-    
-        if (this.player.speed.y == 0) {
-          if (e.code == 'KeyW') this.player.speed.update(0, -1);
-          if (e.code == 'KeyS') this.player.speed.update(0, 1);
-        }
-        if (this.player.speed.x == 0) {
-          if (e.code == 'KeyA') this.player.speed.update(-1, 0);
-          if (e.code == 'KeyD') this.player.speed.update(1, 0);      
-        }      
+      if (!this.isPaused) {
+        if (e.code === 'KeyW' || e.code === 'ArrowUp') this.player.queuedSpeed.update(0, -1);
+        else if (e.code === 'KeyS' || e.code === 'ArrowDown') this.player.queuedSpeed.update(0, 1);
+
+        else if (e.code === 'KeyA' || e.code === 'ArrowLeft') this.player.queuedSpeed.update(-1, 0);
+        else if (e.code === 'KeyD' || e.code === 'ArrowRight') this.player.queuedSpeed.update(1, 0);      
       }
     });
   }
@@ -32,5 +25,28 @@ export default class Controller {
 
   unpause() {
     this.isPaused = false;
+  }
+}
+
+export function modalController(type, game) {
+  if (type === 'start') {
+    game.state = true;
+    game.modal.classList.add('hidden');
+    game.canvas.classList.remove('paused');
+    game.controller.unpause();
+    return;
+  }
+
+  if (type !== 'pause' && type !== 'restart') return;
+
+  game.state = false;
+  game.modal.classList.remove('hidden');
+  game.canvas.classList.add('paused');
+  game.controller.pause();
+
+  if (type === 'pause') {
+    game.startBtn.innerText = 'Resume';
+  } else if (type === 'restart') {
+    game.startBtn.innerText = 'Play again';
   }
 }

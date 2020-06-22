@@ -1,7 +1,6 @@
 import Player from './Player.js'
 import Level from './Level.js'
-import Controller from './Controller.js';
-import modalController from './modalController.js';
+import Controller, { modalController } from './Controller.js';
 
 const canvas = document.getElementById('game');
 const context = canvas.getContext('2d');

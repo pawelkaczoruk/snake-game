@@ -1,5 +1,5 @@
 import { Vec2, Rect, overlaps } from './math.js'
-import modalController from './modalController.js';
+import { modalController } from './Controller.js';
 
 const SIZE = 32;
 const TEXTURES = {
@@ -36,7 +36,7 @@ export default class Player {
     this.score = 0;
     this.pos = [];
     this.speed = new Vec2(1, 0);
-    this.canControl = true;
+    this.queuedSpeed = new Vec2(1, 0);
     this.deltaTime = 0.4;
 
     this.controller = null;
@@ -116,12 +116,15 @@ export default class Player {
   }
 
   reset(lenght = 3, x = 11, y = 6) {
+    // clear snake position array
     this.pos = [];
     
+    // fill snake position array
     for (let i = 0; i < lenght; i++) {
       this.pos.push(new Rect(x - i, y));
     }
 
+    // reset score, speed, deltaTime, apply best score if previous score was bigger
     this.speed.update(1, 0);
     if (this.score > Number(this.bestScore.innerText)) this.bestScore.innerText = this.score;
     this.score = 0;
@@ -133,23 +136,25 @@ export default class Player {
   }
 
   update(level) {
+    // update speed value 
+    if (this.queuedSpeed.y !== -this.speed.y) this.speed.update(0, this.queuedSpeed.y);
+    if (this.queuedSpeed.x !== -this.speed.x) this.speed.update(this.queuedSpeed.x , 0);
+
     const head = this.pos[0];
     const x = head.x + this.speed.x;
     const y = head.y + this.speed.y;
 
+    // update position of snake
     this.pos.unshift(new Rect(x, y));
     this.collide(level);
     this.pos.pop();
     
-
+    // update score
     this.scoreBoard.innerText = this.score;
-
-    this.canControl = true;
   }
 }
 
 function determineSprite(positions, index, speed = null) {
-
   // head
   if (index === 0) {
     if (speed.x > 0) return TEXTURES.head.right;
