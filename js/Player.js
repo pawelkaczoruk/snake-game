@@ -69,8 +69,8 @@ export default class Player {
     // collision with dots
     level.dots.forEach((dot, i) => {
       if (overlaps(head, dot)) {
-        this.game.clickSound.pause();
-        this.game.clickSound.play();
+        this.game.soundBoard.click.pause();
+        this.game.soundBoard.click.play();
         this.score++;
         level.dots.splice(i, 1);
 

@@ -3,8 +3,32 @@ export default class Controller {
     this.player = player;
 
     this.isPaused = true;
+    this.muted = false;
 
     this.createController();
+  }
+
+  createMusicController() {
+    this.player.game.soundBtn.addEventListener('click', () => {
+      this.muted = !this.muted;
+
+      this.player.game.soundBoard.click.muted = !this.player.game.soundBoard.click.muted;
+      this.player.game.soundBoard.music.muted = !this.player.game.soundBoard.music.muted;
+      this.player.game.soundBoard.death.muted = !this.player.game.soundBoard.death.muted;
+    
+      if (this.muted) this.player.game.soundBtn.classList.add('muted');
+      else this.player.game.soundBtn.classList.remove('muted');
+    });
+
+    this.player.game.startBtn.addEventListener('click', () => {
+      modalController('start', this.player.game);
+      this.player.game.soundBoard.click.play();
+    });
+    
+    this.player.game.canvas.addEventListener('click', () => {
+      modalController('pause', this.player.game);
+      this.player.game.soundBoard.click.play();
+    });
   }
 
   createController() {
@@ -28,13 +52,14 @@ export default class Controller {
   }
 }
 
+
 export function modalController(type, game) {
   if (type === 'start') {
     game.state = true;
     game.modal.classList.add('hidden');
     game.canvas.classList.remove('paused');
     game.controller.unpause();
-    game.bgMusic.play();
+    game.soundBoard.music.play();
     return;
   }
 
@@ -44,12 +69,12 @@ export function modalController(type, game) {
   game.modal.classList.remove('hidden');
   game.canvas.classList.add('paused');
   game.controller.pause();
-  game.bgMusic.pause();
+  game.soundBoard.music.pause();
 
   if (type === 'pause') {
     game.startBtn.innerText = 'Resume';
   } else if (type === 'restart') {
-    game.deathSound.play();
+    game.soundBoard.death.play();
     game.startBtn.innerText = 'Play again';
   }
 }

@@ -7,7 +7,7 @@ const TEXTURES = {
 
 export default class Level extends Rect {
   constructor(x, y, w, h) {
-    super(x, y, w, h);
+    super(x, y, w / SIZE, h / SIZE);
 
     this.dots = [];
   }
